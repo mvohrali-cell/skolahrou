@@ -1,252 +1,309 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Škola hrou | Edu-Box CZ</title>
-    <!-- Knihovny pro vzhled a ikony -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- React a Babel (umožní spustit React kód přímo v HTML) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-    </style>
-</head>
-<body class="bg-white">
-    <div id="root"></div>
+import React, { useState } from 'react';
+import { 
+  Box, Layers, History, Zap, CheckCircle2, Printer, Mail, ShieldCheck, 
+  LayoutGrid, Lock, ChevronRight, BookOpen, FileText, Download, 
+  GraduationCap, ArrowLeft, Camera, Home, ShieldAlert, Flag, 
+  Factory, Tent, Theater, Building, Scale, FileDigit, Info, 
+  Construction, Map, Users, Crosshair, Landmark, Waves, TowerControl,
+  Compass, PenTool, Sprout, HardHat, Hammer, Target, Trophy, Lightbulb
+} from 'lucide-react';
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const myPhoto = "foto_boxu.jpg
+const App = () => {
+  const [view, setView] = useState('home');
 
-        // Pomocná komponenta pro ikony z knihovny Lucide
-        const Icon = ({ name, size = 20, className = "" }) => {
-            useEffect(() => {
-                if (window.lucide) { window.lucide.createIcons(); }
-            }, [name]);
-            return <i data-lucide={name} style={{width: size, height: size}} className={`inline-block ${className}`}></i>;
-        };
+  // =========================================================================
+  // 📸 TVOJE FOTKA BOXU
+  // Nahraj soubor na GitHub a zde změň název, pokud se jmenuje jinak:
+  const MOJE_FOTKA_GRATNELLS = "box.jpg"; 
+  // =========================================================================
 
-        const App = () => {
-            const [view, setView] = useState('home');
+  const lessons4 = [
+    { id: "4-01", name: "01 Stroj času a osa dějin", month: "Září", icon: <History />, desc: "Chronologie a barevné kódování epoch." },
+    { id: "4-02", name: "02 Lovci mamutů", month: "Říjen", icon: <Tent />, desc: "První obydlí a statika kuželovitého tvaru." },
+    { id: "4-03", name: "03 Keltské oppidum", month: "Listopad", icon: <ShieldAlert />, desc: "Klešťovitá brána a hradební valy." },
+    { id: "4-04", name: "04 Příchod Slovanů", month: "Prosinec", icon: <Layers />, desc: "Model hory Říp a rotunda sv. Jiří." },
+    { id: "4-05", name: "05 Velká Morava", month: "Leden", icon: <Landmark />, desc: "První kamenné stavby a baziliky." },
+    { id: "4-06", name: "06 Raní Přemyslovci", month: "Únor", icon: <TowerControl />, desc: "Románský sloh, masivní zdi a donjon." },
+    { id: "4-07", name: "07 Středověké město", month: "Březen", icon: <LayoutGrid />, desc: "Urbanismus, náměstí a podloubí." },
+    { id: "4-08", name: "08 Gotika - Karel IV.", month: "Duben", icon: <Zap />, desc: "Lomený oblouk a vertikalita katedrál." },
+    { id: "4-09", name: "09 Chalupa Markétka", month: "Květen", icon: <Home />, desc: "Lidová architektura a vliv klimatu." },
+    { id: "4-10", name: "10 Finále: Můj kraj", month: "Červen", icon: <Map />, desc: "Rekonstrukce nejvýznamnější památky regionu." }
+  ];
 
-            // --- DATA PRO PORTÁL ---
-            const lessons4 = [
-                { id: "PL01", name: "01 Stroj času a osa dějin", month: "Září", icon: "history", desc: "Úvod do chronologie a barvy historických epoch.", file: "01 Stroj času a osa dějin.pdf" },
-                { id: "PL02", name: "02 Lovci mamutů", month: "Říjen", icon: "tent", desc: "První obydlí z kostí a kůží. Statika kužele.", file: "metodika_4_02.pdf" },
-                { id: "PL03", name: "03 Keltské oppidum", month: "Listopad", icon: "shield-alert", desc: "Klešťovitá brána a hradební valy.", file: "metodika_4_03.pdf" },
-                { id: "PL04", name: "04 Příchod Slovanů", month: "Prosinec", icon: "layers", desc: "Hora Říp, rotunda a první zemnice v údolí.", file: "metodika_4_04.pdf" },
-                { id: "PL05", name: "05 Velká Morava", month: "Leden", icon: "landmark", desc: "Zděné baziliky a umění šperku (Gombíky).", file: "metodika_4_05.pdf" },
-                { id: "PL06", name: "06 Raní Přemyslovci", month: "Únor", icon: "tower-control", desc: "Románský sloh, masivní zdi a obytné věže.", file: "metodika_4_06.pdf" },
-                { id: "PL07", name: "07 Středověké město", month: "Březen", icon: "layout-grid", desc: "Urbanismus, právo trhu a domy s podloubím.", file: "metodika_4_07.pdf" },
-                { id: "PL08", name: "08 Gotika a Karel IV.", month: "Duben", icon: "zap", desc: "Lomený oblouk, katedrály a Karlův most.", file: "metodika_4_08.pdf" },
-                { id: "PL09", name: "09 Chalupa Markétka", month: "Květen", icon: "home", desc: "Lidová architektura, roubení a modularita.", file: "metodika_4_09.pdf" },
-                { id: "PL10", name: "10 Můj kraj v historii", month: "Červen", icon: "map", desc: "Finále: Rekonstrukce místní dominanty regionu.", file: "metodika_4_10.pdf" }
-            ];
+  const lessons5 = [
+    { id: "5-01", name: "01 Husitské ležení", month: "Září", icon: <ShieldCheck />, desc: "Vozová hradba a strategie mobilní pevnosti." },
+    { id: "5-02", name: "02 Barokní areál", month: "Říjen", icon: <LayoutGrid />, desc: "Symetrie zámku a francouzské zahrady." },
+    { id: "5-03", name: "03 Škola základ života", month: "Listopad", icon: <BookOpen />, desc: "Reformy Marie Terezie a dobová třída." },
+    { id: "5-04", name: "04 Věk páry a komínů", month: "Prosinec", icon: <Factory />, desc: "Průmyslová revoluce a Baťovy domky." },
+    { id: "5-05", name: "05 Národní obrození", month: "Leden", icon: <Theater />, desc: "Symbolika Národního divadla a nábřeží." },
+    { id: "5-06", name: "06 První republika", month: "Únor", icon: <Building />, desc: "Funkcionalismus a moderní životní styl." },
+    { id: "5-07", name: "Betonová hranice", month: "Březen", icon: <Construction />, desc: "Opevnění 1938 a konstrukce řopíků." },
+    { id: "5-08", name: "Sídliště a modularita", month: "Duben", icon: <Box />, desc: "Socialismus, panelové domy a opona." },
+    { id: "5-09", name: "Sametová revoluce", month: "Květen", icon: <Flag />, desc: "Pád komunismu a návrat ke svobodě." },
+    { id: "5-10", name: "Moderní Česko", month: "Červen", icon: <Sprout />, desc: "Udržitelný rozvoj a vize budoucnosti." }
+  ];
 
-            const lessons5 = [
-                { id: "PL01", name: "01 Husitské ležení", month: "Září", icon: "shield-check", desc: "Vozová hradba, bojové vozy a strategie.", file: "Projektový list 01 září husté 5 třída.pdf" },
-                { id: "PL02", name: "02 Barokní areál", month: "Říjen", icon: "layout-grid", desc: "Symetrie zámku, zahrada a morový sloup.", file: "projektovy list 02 říjen baroko 5 třída.pdf" },
-                { id: "PL03", name: "03 Škola základ života", month: "Listopad", icon: "book-open", desc: "Reformy Marie Terezie a historická třída.", file: "Projekotvý list 03 listopad marie terezie 5 třída.pdf" },
-                { id: "PL04", name: "04 Věk páry a komínů", month: "Prosinec", icon: "factory", desc: "Průmyslová revoluce a Baťovy domky.", file: "PL 04 prosinec průmyslová revoluce 5 třída.pdf" },
-                { id: "PL05", name: "05 Národní obrození", month: "Leden", icon: "theater", desc: "Divadlo 'Národ sobě', scéna a nábřeží.", file: "PL 05 Národní obrození 5 třída.pdf" },
-                { id: "PL06", name: "06 První republika", month: "Únor", icon: "building", desc: "Funkcionalismus, bílé vily a Masaryk.", file: "PL 06 1 republika 5 třída.pdf" },
-                { id: "PL07", name: "07 Betonová hranice", month: "Březen", icon: "construction", desc: "Opevnění 1938, stavba řopíků a zátarasy.", file: "PL 07 březen 2SV 5 třída.pdf" },
-                { id: "PL08", name: "08 Sídliště a modularita", month: "Duben", icon: "box", desc: "Život v socialismu a panelové domy.", file: "PL 08 duben železná opona 5 třída.pdf" },
-                { id: "PL09", name: "09 Sametová revoluce", month: "Květen", icon: "flag", desc: "Návrat ke svobodě, Václav Havel a pád zdi.", file: "PL 09 květen sametová revoluce 5 třída.pdf" },
-                { id: "PL10", name: "10 Moderní Česko", month: "Červen", icon: "sprout", desc: "Smart region a vize pro budoucnost.", file: "PL 10 červen čr v evropě moderní stát 5 třída.pdf" }
-            ];
+  const adminDocs = [
+    { name: "Smlouva o dílo (Vzor)", type: "DOCX", icon: <Scale />, file: "smlouva.docx" },
+    { name: "Technická specifikace", type: "PDF", icon: <FileDigit />, file: "specifikace.pdf" }
+  ];
 
-            const adminDocs = [
-                { name: "Smlouva o dílo (Vzor)", file: "smlouva_vzor.docx", icon: "scale" },
-                { name: "Technická specifikace NM-650", file: "specifikace_nm650.pdf", icon: "file-digit" }
-            ];
+  if (view === 'portal') {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 animate-in fade-in duration-500 text-left">
+        <nav className="bg-slate-950 text-white p-6 sticky top-0 z-50 border-b-4 border-red-600 flex justify-between items-center shadow-xl">
+          <button onClick={() => setView('home')} className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest hover:text-red-500 transition-colors outline-none">
+            <ArrowLeft size={14} /> Zpět na web
+          </button>
+          <div className="flex items-center gap-3">
+            <Lock size={18} className="text-red-500" />
+            <span className="font-black uppercase tracking-tighter italic text-xl">Metodický Portál NM</span>
+          </div>
+          <div className="bg-red-600 px-4 py-1.5 rounded-lg font-black text-[10px] uppercase shadow-lg">Školní zóna</div>
+        </nav>
 
-            if (view === 'portal') {
-                return (
-                    <div className="min-h-screen bg-slate-50 text-left">
-                        <nav className="bg-slate-950 text-white p-6 sticky top-0 z-50 border-b-4 border-red-600 flex justify-between items-center shadow-xl">
-                            <button onClick={() => setView('home')} className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest hover:text-red-500 transition-colors">
-                                <Icon name="arrow-left" size={14}/> Zpět na web
-                            </button>
-                            <div className="flex items-center gap-3 font-black uppercase italic text-lg tracking-widest">
-                                <Icon name="lock" size={18} className="text-red-500"/> Portál pro školy
+        <div className="max-w-7xl mx-auto p-8 md:p-12 text-left">
+          <section className="mb-20">
+            <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
+                <Scale size={16} /> Dokumentace pro ředitele
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+                {adminDocs.map((doc, i) => (
+                    <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between group hover:border-red-600 transition-all cursor-pointer">
+                        <div className="flex items-center gap-4 text-left leading-none">
+                            <div className="bg-slate-100 p-3 rounded-2xl text-slate-400 group-hover:text-red-600 transition-colors">{doc.icon}</div>
+                            <p className="font-black uppercase text-xs text-slate-900">{doc.name}</p>
+                        </div>
+                        <Download size={20} />
+                    </div>
+                ))}
+            </div>
+          </section>
+
+          <section className="mb-20">
+            <div className="flex items-center gap-4 mb-10 text-left leading-none">
+              <div className="bg-blue-600 text-white p-3 rounded-2xl shadow-xl shadow-blue-900/20"><Map size={24} /></div>
+              <h2 className="text-3xl font-black uppercase italic tracking-tight text-slate-950">4. Ročník (Kořeny)</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+              {lessons4.map((lesson, i) => (
+                <div key={i} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between min-h-[220px] hover:shadow-xl transition-all border-l-4 border-l-blue-600 text-left">
+                    <div>
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="text-blue-600">{lesson.icon}</div>
+                            <span className="text-[9px] font-black uppercase tracking-widest bg-blue-50 px-2 py-1 rounded text-blue-500">{lesson.month}</span>
+                        </div>
+                        <h3 className="text-xs font-black uppercase text-slate-950 mb-2 leading-tight">{lesson.name}</h3>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase italic leading-tight">{lesson.desc}</p>
+                    </div>
+                    <button className="mt-4 w-full bg-slate-50 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-2">
+                        STÁHNOUT PDF <Download size={12} />
+                    </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="text-left leading-none">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="bg-red-600 text-white p-3 rounded-2xl shadow-xl shadow-red-900/20"><History size={24} /></div>
+              <h2 className="text-3xl font-black uppercase italic tracking-tight text-slate-900">5. Ročník (Moderní stát)</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 text-left leading-none">
+              {lessons5.map((lesson, i) => (
+                <div key={i} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col justify-between min-h-[220px] hover:shadow-xl transition-all border-l-4 border-l-red-600 text-left">
+                    <div>
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="text-red-600">{lesson.icon}</div>
+                            <span className="text-[9px] font-black uppercase tracking-widest bg-red-50 px-2 py-1 rounded text-red-600">{lesson.month}</span>
+                        </div>
+                        <h3 className="text-xs font-black uppercase text-slate-950 mb-2 leading-tight">{lesson.name}</h3>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase italic leading-tight">{lesson.desc}</p>
+                    </div>
+                    <button className="mt-4 w-full bg-slate-900 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-center hover:bg-red-600 transition-all flex items-center justify-center gap-2">
+                        STÁHNOUT PDF <Download size={12} />
+                    </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white font-sans text-slate-900 scroll-smooth animate-in fade-in duration-700 text-left">
+      
+      {/* NAV */}
+      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-lg z-[100] border-b border-slate-100 px-6 h-20 flex justify-between items-center text-left leading-none">
+        <div className="flex items-center gap-3">
+          <div className="bg-red-600 p-1.5 rounded-xl text-white shadow-lg shadow-red-600/20"><Box size={24} /></div>
+          <span className="text-xl font-black uppercase tracking-tighter italic text-slate-950">Škola<span className="text-red-600">hrou</span></span>
+        </div>
+        <button onClick={() => setView('portal')} className="flex items-center gap-3 bg-slate-950 text-white px-8 py-3 rounded-full hover:bg-red-600 transition-all shadow-xl active:scale-95 text-[10px] font-black uppercase tracking-widest">
+            <Lock size={16} className="text-red-500" /> Portál pro školy
+        </button>
+      </nav>
+
+      {/* HERO SECTION */}
+      <header className="pt-48 pb-32 px-6 bg-slate-50 relative overflow-hidden text-left leading-none">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center text-left leading-none">
+          <div className="text-left leading-none">
+            <span className="bg-red-100 text-red-600 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-[0.3em] mb-8 inline-block shadow-sm">INŽENÝRSKÝ SYSTÉM NM-650</span>
+            <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-10 uppercase italic text-slate-950">
+                Stavíme<br/><span className="text-red-600">Dějiny</span>
+            </h1>
+            <p className="text-2xl text-slate-500 font-medium leading-relaxed mb-12 max-w-xl italic">
+                Edu-Box mění abstraktní letopočty v 3D modely. Žáci dějiny nečtou, ale fyzicky konstruují souvislosti světa skrze statiku a architekturu.
+            </p>
+            <div className="flex flex-wrap gap-6 text-left leading-none">
+                <button onClick={() => setView('portal')} className="bg-red-600 text-white px-12 py-6 rounded-3xl font-black uppercase text-sm tracking-widest shadow-2xl hover:bg-red-700 transition-all flex items-center gap-4 active:scale-95">
+                    <BookOpen size={24}/> Otevřít Knihovnu
+                </button>
+                <div className="bg-white p-6 rounded-3xl border-2 border-slate-200 flex items-center gap-6 shadow-sm text-left leading-none">
+                    <div className="text-left leading-none">
+                        <p className="text-[10px] font-black text-slate-400 mb-1 uppercase">Standard sady</p>
+                        <p className="text-3xl font-black text-slate-900 leading-none tracking-tight">49 500,-</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+          
+          <div className="relative group text-left">
+             <div className="bg-white p-4 rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.15)] border-2 border-slate-100 overflow-hidden aspect-square flex items-center justify-center bg-slate-100 text-left">
+                <img 
+                    src={MOJE_FOTKA_GRATNELLS} 
+                    alt="Foto Gratnells Boxu" 
+                    className="w-full h-full object-cover rounded-[3.5rem]"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/800x800?text=Nahraj+box.jpg+na+GitHub'; }}
+                />
+             </div>
+             <div className="absolute -bottom-8 -right-8 bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-b-[12px] border-red-600 text-left leading-none">
+                <div className="flex items-center gap-4 mb-2 text-left leading-none">
+                  <Zap className="text-red-600" size={32} />
+                  <p className="text-6xl font-black italic">20</p>
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.3em] opacity-60 text-left leading-tight italic">Lekcí pro 1. stupeň</p>
+             </div>
+          </div>
+        </div>
+      </header>
+
+      {/* NOVÁ SEKCE: CHALLENGE-BASED LEARNING */}
+      <section className="py-32 px-6 bg-slate-950 text-white text-left leading-none overflow-hidden relative">
+          <div className="absolute right-0 top-0 p-20 opacity-5 rotate-12"><Target size={300} /></div>
+          <div className="max-w-7xl mx-auto relative z-10 text-left leading-none">
+              <div className="grid lg:grid-cols-2 gap-20 items-center text-left leading-none">
+                  <div className="text-left leading-none">
+                      <span className="text-red-500 font-black uppercase tracking-[0.4em] text-xs mb-6 block leading-none italic">Pedagogická Inovace</span>
+                      <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none mb-10">
+                          Challenge Based <br/><span className="text-red-600 underline decoration-white decoration-8 underline-offset-8">Learning</span>
+                      </h2>
+                      <p className="text-xl text-slate-400 font-medium leading-relaxed italic mb-10 text-left">
+                        „Děti u nás neřeší nudné úkoly. Dostávají výzvu. Musí samy přijít na to, jak staticky zajistit věž hradu nebo jak vyvážit nápravu husitského vozu pod tíhou brnění.“
+                      </p>
+                      <div className="flex gap-4 text-left leading-none">
+                          <div className="bg-white/5 border border-white/10 p-6 rounded-3xl flex-1 text-left leading-none">
+                              <Trophy className="text-red-500 mb-4" />
+                              <h4 className="text-lg font-black uppercase mb-2">Výzva místo návodu</h4>
+                              <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight italic">Žáci neopakují kroky. Řeší skutečné inženýrské problémy historických epoch.</p>
+                          </div>
+                          <div className="bg-white/5 border border-white/10 p-6 rounded-3xl flex-1 text-left leading-none">
+                              <Lightbulb className="text-amber-500 mb-4" />
+                              <h4 className="text-lg font-black uppercase mb-2">Aha-Efekt</h4>
+                              <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight italic">Okamžik, kdy dítě pochopí princip klenby nebo páky, je nejsilnějším momentem výuky.</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="bg-white/5 p-12 rounded-[4rem] border-2 border-white/10 text-left leading-none">
+                    <h3 className="text-2xl font-black uppercase italic mb-8 border-b border-white/10 pb-4">CBL v lekci Husité:</h3>
+                    <div className="space-y-8">
+                        <div className="flex gap-6 items-start text-left leading-none">
+                            <span className="text-3xl font-black text-red-600 italic leading-none">?</span>
+                            <div>
+                                <h5 className="font-black uppercase text-sm mb-1 leading-none tracking-tight">Velká výzva (The Challenge)</h5>
+                                <p className="text-xs text-slate-400 italic">„Jak postavit vůz, který v bitvě u Sudoměře ochrání posádku a zároveň dovolí střelbu z děl?“</p>
                             </div>
-                            <div className="bg-red-600 px-4 py-1 rounded font-black text-[10px] uppercase shadow-lg tracking-widest">Školní zóna</div>
-                        </nav>
-
-                        <div className="max-w-7xl mx-auto p-8 md:p-12">
-                            {/* ADMINISTRATIVA */}
-                            <section className="mb-16">
-                                <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] mb-6 flex items-center gap-3">
-                                    <Icon name="scale" size={16}/> Administrativa pro školy
-                                </h2>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {adminDocs.map((doc, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between group hover:border-red-600 transition-all cursor-pointer">
-                                            <div className="flex items-center gap-4">
-                                                <div className="bg-slate-100 p-3 rounded-2xl text-slate-400 group-hover:text-red-600 transition-colors">
-                                                    <Icon name={doc.icon} size={24}/>
-                                                </div>
-                                                <p className="font-black uppercase text-xs text-slate-900">{doc.name}</p>
-                                            </div>
-                                            <a href={doc.file} download className="text-slate-300 hover:text-red-600 transition-colors">
-                                                <Icon name="download" size={20}/>
-                                            </a>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                            {/* 4. TŘÍDA */}
-                            <section className="mb-16">
-                                <div className="flex items-center gap-4 mb-10">
-                                    <div className="bg-blue-600 text-white p-3 rounded-2xl shadow-xl shadow-blue-900/20"><Icon name="map" size={24}/></div>
-                                    <h2 className="text-3xl font-black uppercase italic tracking-tight">4. Ročník (Kořeny)</h2>
-                                </div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                    {lessons4.map(l => (
-                                        <div key={l.id} className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col justify-between min-h-[220px] hover:shadow-xl transition-all border-l-4 border-l-blue-600">
-                                            <div>
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <Icon name={l.icon} className="text-blue-600" size={24}/>
-                                                    <span className="text-[9px] font-black uppercase tracking-widest bg-blue-50 px-2 py-1 rounded text-blue-500">{l.month}</span>
-                                                </div>
-                                                <h3 className="text-xs font-black uppercase text-slate-950 mb-2 leading-tight">{l.name}</h3>
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase italic leading-tight">{l.desc}</p>
-                                            </div>
-                                            <a href={l.file} download className="mt-4 w-full bg-slate-50 text-blue-600 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-center hover:bg-blue-600 hover:text-white transition-all">Stáhnout PDF</a>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                            {/* 5. TŘÍDA */}
-                            <section>
-                                <div className="flex items-center gap-4 mb-10">
-                                    <div className="bg-red-600 text-white p-3 rounded-2xl shadow-xl shadow-red-900/20"><Icon name="history" size={24}/></div>
-                                    <h2 className="text-3xl font-black uppercase italic tracking-tight">5. Ročník (Moderní stát)</h2>
-                                </div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                    {lessons5.map(l => (
-                                        <div key={l.id} className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col justify-between min-h-[220px] hover:shadow-xl transition-all border-l-4 border-l-red-600">
-                                            <div>
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <Icon name={l.icon} className="text-red-600" size={24}/>
-                                                    <span className="text-[9px] font-black uppercase tracking-widest bg-red-50 px-2 py-1 rounded text-red-600">{l.month}</span>
-                                                </div>
-                                                <h3 className="text-xs font-black uppercase text-slate-950 mb-2 leading-tight">{l.name}</h3>
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase italic leading-tight">{l.desc}</p>
-                                            </div>
-                                            <a href={l.file} download className="mt-4 w-full bg-slate-900 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-center hover:bg-red-600 transition-all">Stáhnout PDF</a>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
+                        </div>
+                        <div className="flex gap-6 items-start text-left leading-none">
+                            <span className="text-3xl font-black text-green-500 italic leading-none">!</span>
+                            <div>
+                                <h5 className="font-black uppercase text-sm mb-1 leading-none tracking-tight">Inženýrské řešení</h5>
+                                <p className="text-xs text-slate-400 italic">Děti konstruují sklopnou bočnici s kloubem a nápravu děl z Technic prvků Boxu A.</p>
+                            </div>
                         </div>
                     </div>
-                );
-            }
+                  </div>
+              </div>
+          </div>
+      </section>
 
-            return (
-                <div className="min-h-screen bg-white text-left">
-                    {/* NAV */}
-                    <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-lg z-[100] border-b border-slate-100 px-6 h-20 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-red-600 p-1.5 rounded-xl text-white shadow-lg"><Icon name="box" size={24}/></div>
-                            <span className="text-xl font-black uppercase tracking-tighter italic text-slate-950">Škola<span className="text-red-600">hrou</span></span>
+      {/* FILOZOFIE SEKCE */}
+      <section id="filozofie" className="py-32 px-6 bg-white text-left max-w-7xl mx-auto leading-none">
+        <div className="grid lg:grid-cols-12 gap-16 items-start text-left leading-none">
+            <div className="lg:col-span-6 text-left leading-none">
+                <h2 className="text-5xl font-black uppercase tracking-tighter italic leading-none mb-10 text-slate-950">Filozofie:<br/><span className="text-red-600">Mozek je dílna</span></h2>
+                <div className="space-y-10 text-left leading-none">
+                    <div className="flex gap-6 text-left leading-none">
+                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 shrink-0 shadow-sm border border-slate-100">
+                            <Layers size={32} />
                         </div>
-                        <button onClick={() => setView('portal')} className="flex items-center gap-3 bg-slate-950 text-white px-8 py-3 rounded-full hover:bg-red-600 transition-all shadow-xl active:scale-95 text-[10px] font-black uppercase tracking-widest">
-                            <Icon name="lock" size={16} className="text-red-500" /> Portál pro školy
-                        </button>
-                    </nav>
-
-                    {/* HERO */}
-                    <header className="pt-48 pb-32 px-6 bg-slate-50 relative overflow-hidden">
-                        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
-                            <div className="text-left animate-in fade-in slide-in-from-left-8 duration-700">
-                                <span className="bg-red-100 text-red-600 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-[0.3em] mb-8 inline-block shadow-sm">Projekt Škola hrou</span>
-                                <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-10 uppercase italic text-slate-950">
-                                    Stavíme<br/><span className="text-red-600">Příběhy</span>
-                                </h1>
-                                <p className="text-2xl text-slate-500 font-medium leading-relaxed mb-12 max-w-xl italic">
-                                    Edu-Box NM-650: Inovativní 3D platforma pro výuku vlastivědy a polytechniky. Žáci dějiny nečtou, ale fyzicky konstruují.
-                                </p>
-                                <div className="flex flex-wrap gap-6">
-                                    <button onClick={() => setView('portal')} className="bg-red-600 text-white px-12 py-6 rounded-3xl font-black uppercase text-sm tracking-widest shadow-2xl hover:bg-red-700 transition-all flex items-center gap-4 active:scale-95">
-                                        <Icon name="book-open" size={24}/> Otevřít Metodiku
-                                    </button>
-                                    <div className="bg-white p-6 rounded-3xl border-2 border-slate-200 flex items-center gap-6 shadow-sm">
-                                        <div className="text-left leading-none">
-                                            <p className="text-[10px] font-black text-slate-400 mb-1">Cena sady</p>
-                                            <p className="text-3xl font-black text-slate-950">49 500,-</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="relative">
-                                <div className="bg-white p-4 rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.15)] border-2 border-slate-100 overflow-hidden aspect-square flex items-center justify-center bg-slate-100">
-                                    <Icon name="camera" size={64} className="opacity-10 text-slate-400"/>
-                                </div>
-                                <div className="absolute -bottom-8 -right-8 bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-b-[12px] border-red-600 text-left">
-                                    <div className="flex items-center gap-4 mb-2">
-                                        <Icon name="zap" size={32} className="text-red-600"/>
-                                        <p className="text-6xl font-black leading-none italic">20+</p>
-                                    </div>
-                                    <p className="text-xs font-black uppercase tracking-[0.3em] opacity-60 leading-tight italic">Lekcí pro ZŠ</p>
-                                </div>
-                            </div>
+                        <div className="text-left leading-none">
+                            <h4 className="text-xl font-black uppercase italic mb-2 leading-none">75% Míra zapamatování</h4>
+                            <p className="text-slate-500 font-medium italic leading-relaxed text-left">Studie potvrzují, že vlastní fyzická konstrukce vede k hlubokému ukotvení znalostí. Žák model informaci prožije.</p>
                         </div>
-                    </header>
-
-                    {/* FILOZOFIE */}
-                    <section className="py-32 px-6 bg-white border-t">
-                        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12">
-                            <div>
-                                <div className="bg-red-600 p-4 rounded-2xl inline-block mb-6 text-white shadow-xl"><Icon name="bar-chart-3" size={32}/></div>
-                                <h4 className="text-xl font-black uppercase mb-4">75% Míra zapamatování</h4>
-                                <p className="text-slate-500 font-medium italic leading-relaxed">Vlastní fyzická konstrukce vede k hlubokému ukotvení znalostí. Žák model informaci prožije.</p>
-                            </div>
-                            <div>
-                                <div className="bg-slate-900 p-4 rounded-2xl inline-block mb-6 text-white shadow-xl"><Icon name="shield-check" size={32}/></div>
-                                <h4 className="text-xl font-black uppercase mb-4">Inovace dle RVP</h4>
-                                <p className="text-slate-500 font-medium italic leading-relaxed">Plná kompatibilita se Šablonami OP JAK. Naplňuje polytechniku i novou informatiku.</p>
-                            </div>
-                            <div>
-                                <div className="bg-blue-600 p-4 rounded-2xl inline-block mb-6 text-white shadow-xl"><Icon name="layers" size={32}/></div>
-                                <h4 className="text-xl font-black uppercase mb-4">Inženýrská Logika</h4>
-                                <p className="text-slate-500 font-medium italic leading-relaxed">Učíme techniku SNOT (Skelet vs Fasáda). Rozvoj prostorové představivosti a statiky.</p>
-                            </div>
+                    </div>
+                    <div className="flex gap-6 text-left leading-none">
+                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 shrink-0 shadow-sm border border-slate-100">
+                            <Users size={32} />
                         </div>
-                    </section>
-
-                    <footer className="bg-slate-950 text-white py-20 px-6 border-t border-red-600">
-                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 opacity-60">
-                            <div className="text-left leading-none">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <Icon name="box" size={32} className="text-red-600"/>
-                                    <span className="text-3xl font-black uppercase tracking-tighter italic text-white text-left">Škola hrou</span>
-                                </div>
-                                <p className="text-xs font-bold uppercase tracking-[0.4em]">Inženýrská metoda Martin Vohralík // 2026</p>
-                            </div>
-                            <div className="text-right flex flex-col items-end">
-                                <p className="text-[10px] font-black uppercase tracking-widest mb-4 italic">Kontakt a podpora</p>
-                                <p className="text-sm font-black underline decoration-red-600 decoration-8 underline-offset-8">info@edu-box.cz</p>
-                            </div>
+                        <div className="text-left leading-none">
+                            <h4 className="text-xl font-black uppercase italic mb-2 leading-none">Hmatová Inkluze (ADHD)</h4>
+                            <p className="text-slate-500 font-medium italic leading-relaxed text-left">Práce s kostkami okamžitě zklidňuje a fixuje pozornost. Dítě nevyrušuje a je 100% vtaženo do děje.</p>
                         </div>
-                    </footer>
+                    </div>
                 </div>
-            );
-        };
+            </div>
+            <div className="lg:col-span-6 bg-slate-900 rounded-[4rem] p-12 text-white shadow-2xl relative overflow-hidden text-left leading-none">
+                <div className="absolute left-0 bottom-0 p-10 opacity-5"><Construction size={180} /></div>
+                <h4 className="text-[#F59E0B] font-black uppercase text-xs tracking-widest mb-6 border-b border-white/10 pb-4 leading-none">Inženýrská Logika SNOT+</h4>
+                <div className="space-y-6 text-left leading-none">
+                    <div className="flex items-start gap-4 text-left leading-none">
+                        <ChevronRight className="text-red-600 shrink-0" />
+                        <p className="text-sm font-bold text-slate-300 italic text-left"><span className="text-white font-black uppercase">Skelet vs Fasáda:</span> Učíme děti stavět pevné vnitřní jádro z bulk kostek a na něj připevňovat historicky věrné fasády.</p>
+                    </div>
+                    <div className="flex items-start gap-4 text-left leading-none">
+                        <ChevronRight className="text-red-600 shrink-0" />
+                        <p className="text-sm font-bold text-slate-300 italic text-left"><span className="text-white font-black uppercase">Univerzalita:</span> Jeden hardware pokrývá výuku od 1. třídy přes 5. třídu až po 9. třídu (geopolitika).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
+      {/* FOOTER */}
+      <footer className="bg-slate-950 text-white py-20 px-6 border-t border-red-600 text-left leading-none">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 text-left leading-none">
+          <div className="text-left leading-none">
+            <div className="flex items-center gap-3 mb-6 text-left leading-none">
+              <Box className="text-red-600" size={32} />
+              <span className="text-3xl font-black uppercase tracking-tighter italic text-white text-left leading-none">Škola hrou</span>
+            </div>
+            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-left leading-none">Metodický systém Martina Vohralíka</p>
+            <p className="text-[9px] font-bold text-slate-700 uppercase tracking-widest text-left leading-none">© 2026 Projekt Škola hrou | Pilotní program 100 škol</p>
+          </div>
+          <div className="flex gap-16 text-left leading-none">
+             <div className="text-left leading-none">
+                <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-4 text-left leading-none">Kontakt</p>
+                <p className="text-xs font-bold uppercase italic text-left leading-none">info@edu-box.cz</p>
+                <p className="text-xs font-bold uppercase italic text-left leading-none">788 03 Nový Malín</p>
+             </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
 
-</html>
-
+export default App;
